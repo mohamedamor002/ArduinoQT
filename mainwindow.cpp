@@ -32,6 +32,12 @@ void MainWindow:: update_label()
     data=A.read_from_arduino();
     qDebug() << data ;
 
+    uint scenarioId = Arduino::createScenario(data.toUInt());
+
+    uint trafficlight = data.toUInt();
+    qInfo() << scenarioId + QString(" : traffic light number ") +
+                   trafficlight;
+
     //INSERT THE QUERY HERE
 
     //GET THE CURRENT POSITION HERE
