@@ -31,7 +31,7 @@ public: // methods of the Arduino class
                   "RETURNING ID INTO ?;"
                   "END;");
 
-    query.addBindValue(0, QSql::Out);
+    query.addBindValue("", QSql::Out);
 
     query.exec();
 
@@ -49,11 +49,11 @@ public: // methods of the Arduino class
                   "END;");
 
     query.bindValue(":CURRENT_POSITION", light);
-    query.bindValue(":ID", 0, QSql::Out);
+    query.bindValue(":ID", "", QSql::Out);
 
     query.exec();
 
-    return query.boundValue(":S_ID").toString();
+    return query.boundValue(":ID").toString();
   }
 
   static Scenario findScenario(const QString &id) {
