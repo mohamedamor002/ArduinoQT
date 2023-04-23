@@ -27,15 +27,16 @@ public: // methods of the Arduino class
   static QString createScenario() {
     QSqlQuery query;
     query.prepare("BEGIN "
-                  "INSERT INTO AMBULANCE_SCENARIO (CURRENT_POSITION) VALUES(NULL) "
-                  "RETURNING ID INTO ?;"
+                  "INSERT INTO AMBULANCE_SCENARIO (CURRENT_POSITION) VALUES(:CURRENT_POSITION) "
+                  "RETURNING ID INTO :ID;"
                   "END;");
 
-    query.addBindValue("", QSql::Out);
+    query.bindValue(":CURRENT_POSITION",QVariant::Int);
+    query.bindValue(":ID","", QSql::Out);
 
     query.exec();
 
-    return query.boundValue(0).toString();
+    return query.boundValue(":ID").toString();
   }
 
 
