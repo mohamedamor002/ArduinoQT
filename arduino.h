@@ -1,11 +1,11 @@
 #ifndef ARDUINO_H
 #define ARDUINO_H
-#include <QtSerialPort/QSerialPort> // class gathering functions allowing data exchange
+#include <QSerialPort> // class gathering functions allowing data exchange
 // in a serial link
 #include <QDebug>
 #include <QSqlQuery>
 #include <QSqlQueryModel>
-#include <QtSerialPort/QSerialPortInfo> // class providing information about available ports
+#include <QSerialPortInfo> // class providing information about available ports
 
 class Arduino {
 public: // methods of the Arduino class
@@ -24,22 +24,22 @@ public: // methods of the Arduino class
   };
 
 
-  static unsigned int createScenario() {
+  static QString createScenario() {
     QSqlQuery query;
     query.prepare("BEGIN "
                   "INSERT INTO AMBULANCE_SCENARIO (CURRENT_POSITION) VALUES(NULL) "
                   "RETURNING ID INTO ?;"
                   "END;");
 
-    query.addBindValue(0, QSql::Out);
+    query.addBindValue("", QSql::Out);
 
     query.exec();
 
-    return query.boundValue(0).toInt();
+    return query.boundValue(0).toString();
   }
 
 
-  static unsigned int createScenario(unsigned int light) {
+  static QString createScenario(unsigned int light) {
     QSqlQuery query;
     query.prepare("BEGIN "
                   "INSERT INTO AMBULANCE_SCENARIO "
@@ -49,11 +49,11 @@ public: // methods of the Arduino class
                   "END;");
 
     query.bindValue(":CURRENT_POSITION", light);
-    query.bindValue(":ID", 0, QSql::Out);
+    query.bindValue(":ID", "", QSql::Out);
 
     query.exec();
 
-    return query.boundValue(":S_ID").toInt();
+    return query.boundValue(":ID").toString();
   }
 
   static Scenario findScenario(const QString &id) {
