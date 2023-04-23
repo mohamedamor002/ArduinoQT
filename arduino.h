@@ -56,6 +56,22 @@ public: // methods of the Arduino class
     return query.boundValue(":ID").toString();
   }
 
+
+  static bool setScenarioLight(const QString &id,unsigned int light) {
+    QSqlQuery query;
+    query.prepare(
+                  "UPDATE AMBULANCE_SCENARIO "
+                  "SET CURRENT_POSITION=:CURRENT_POSITION "
+                  "WHERE ID = :ID");
+
+    query.bindValue(":ID", id);
+    query.bindValue(":CURRENT_POSITION", light);
+
+    query.exec();
+
+    return true;
+  }
+
   static Scenario findScenario(const QString &id) {
     QSqlQuery query;
     query.prepare("SELECT * FROM AMBULANCE_SCENARIO WHERE ID= ?");
