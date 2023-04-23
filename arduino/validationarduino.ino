@@ -116,6 +116,6 @@ void loop() {
 
   }
 
-  delay(1000);
+  // TODO: debounce time
 
 }
