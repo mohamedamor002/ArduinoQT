@@ -3,9 +3,9 @@
 #include <QSerialPort> // class gathering functions allowing data exchange
 // in a serial link
 #include <QDebug>
+#include <QSerialPortInfo> // class providing information about available ports
 #include <QSqlQuery>
 #include <QSqlQueryModel>
-#include <QSerialPortInfo> // class providing information about available ports
 
 class Arduino {
 public: // methods of the Arduino class
@@ -23,22 +23,21 @@ public: // methods of the Arduino class
     unsigned int heartRate;
   };
 
-
   static QString createScenario() {
     QSqlQuery query;
     query.prepare("BEGIN "
-                  "INSERT INTO AMBULANCE_SCENARIO (CURRENT_POSITION) VALUES(:CURRENT_POSITION) "
+                  "INSERT INTO AMBULANCE_SCENARIO (CURRENT_POSITION) "
+                  "VALUES(:CURRENT_POSITION) "
                   "RETURNING ID INTO :ID;"
                   "END;");
 
-    query.bindValue(":CURRENT_POSITION",QVariant::Int);
-    query.bindValue(":ID","", QSql::Out);
+    query.bindValue(":CURRENT_POSITION", QVariant::Int);
+    query.bindValue(":ID", "", QSql::Out);
 
     query.exec();
 
     return query.boundValue(":ID").toString();
   }
-
 
   static QString createScenario(unsigned int light) {
     QSqlQuery query;
@@ -57,16 +56,16 @@ public: // methods of the Arduino class
     return query.boundValue(":ID").toString();
   }
 
-
-  static bool setScenarioLight(const QString &id,unsigned int light) {
+  static bool setScenarioLight(const QString &id, unsigned int light) {
     QSqlQuery query;
-    query.prepare(
-                  "UPDATE AMBULANCE_SCENARIO "
-                  "SET CURRENT_POSITION=:CURRENT_POSITION "
-                  "WHERE ID = :ID");
 
-    query.bindValue(":ID", id);
-    query.bindValue(":CURRENT_POSITION", light);
+    // Inject directly because the bind causes crashes
+    QString queryString = QString("UPDATE AMBULANCE_SCENARIO "
+                                  "SET CURRENT_POSITION=%1 "
+                                  "WHERE ID = '%2'")
+                              .arg(QString::number(light), id);
+
+    query.prepare(queryString);
 
     query.exec();
 
@@ -75,9 +74,9 @@ public: // methods of the Arduino class
 
   static Scenario findScenario(const QString &id) {
     QSqlQuery query;
-    query.prepare("SELECT * FROM AMBULANCE_SCENARIO WHERE ID= ?");
 
-    query.addBindValue(id);
+    query.prepare(
+        QString("SELECT * FROM AMBULANCE_SCENARIO WHERE ID= '%1'").arg(id));
 
     query.exec();
 
