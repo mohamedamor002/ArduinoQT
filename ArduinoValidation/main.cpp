@@ -21,5 +21,6 @@ int main(int argc, char *argv[])
                                  QObject::tr("Connection failed.\n Click cancel to exist"),QMessageBox::Cancel);
 
 
+
     return a.exec();
 }
